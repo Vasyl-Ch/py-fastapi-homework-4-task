@@ -1,13 +1,17 @@
 from datetime import date
+from pydantic import BaseModel, HttpUrl
 
-from fastapi import UploadFile, Form, File, HTTPException
-from pydantic import BaseModel, field_validator, HttpUrl
 
-from validation import (
-    validate_name,
-    validate_image,
-    validate_gender,
-    validate_birth_date
-)
+class ProfileResponseSchema(BaseModel):
+    id: int
+    user_id: int
+    first_name: str
+    last_name: str
+    gender: str
+    date_of_birth: date
+    info: str
+    avatar: HttpUrl
 
-# Write your code here
+    model_config = {
+        "from_attributes": True
+    }
