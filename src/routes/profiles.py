@@ -9,7 +9,7 @@ from sqlalchemy.orm import joinedload
 from config import get_jwt_auth_manager
 from database import get_db, UserModel, UserProfileModel, UserGroupEnum
 from exceptions import BaseSecurityError, S3FileUploadError
-from schemas.profiles import ProfileResponseSchema
+from schemas.profiles import ProfileResponseSchema, ProfileCreateSchema
 from security.http import get_token
 from security.interfaces import JWTAuthManagerInterface
 from storages import S3StorageInterface
@@ -42,12 +42,13 @@ async def create_user_profile(
 ) -> ProfileResponseSchema:
 
     try:
-        validate_name(first_name)
-        validate_name(last_name)
-        validate_gender(gender)
-        validate_birth_date(date_of_birth)
-        if not info or info.strip() == "":
-            raise ValueError("Info field cannot be empty or contain only spaces.")
+        profile_data = ProfileCreateSchema(
+            first_name=first_name,
+            last_name=last_name,
+            gender=gender,
+            date_of_birth=date_of_birth,
+            info=info
+        )
         validate_image(avatar)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc))
