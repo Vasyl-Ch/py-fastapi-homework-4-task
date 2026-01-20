@@ -1,11 +1,14 @@
 from datetime import date
 from typing import Annotated
+
+from fastapi import UploadFile, HTTPException, status
 from pydantic import BaseModel, HttpUrl, BeforeValidator
 
 from validation import (
     validate_name,
     validate_gender,
     validate_birth_date,
+    validate_image,
 )
 
 
@@ -30,6 +33,13 @@ def validate_info_field(value: str) -> str:
     return value
 
 
+def validate_avatar_field(value: UploadFile) -> None:
+    try:
+        validate_image(value)
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc))
+
+
 class ProfileCreateSchema(BaseModel):
 
     first_name: Annotated[str, BeforeValidator(validate_name_field)]
@@ -37,6 +47,7 @@ class ProfileCreateSchema(BaseModel):
     gender: Annotated[str, BeforeValidator(validate_gender_field)]
     date_of_birth: Annotated[date, BeforeValidator(validate_birth_date_field)]
     info: Annotated[str, BeforeValidator(validate_info_field)]
+    avatar: Annotated[UploadFile, BeforeValidator(validate_avatar_field)]
 
     model_config = {
         "json_schema_extra": {
@@ -52,7 +63,20 @@ class ProfileCreateSchema(BaseModel):
         }
     }
 
-
+# class ProfileResponseSchema(BaseModel):
+#     id: int
+#     user_id: int
+#     first_name: str
+#     last_name: str
+#     gender: str
+#     date_of_birth: date
+#     info: str
+#     avatar: HttpUrl
+#
+# # Write your code here
+#     model_config = {
+#         "from_attributes": True
+#     }
 class ProfileResponseSchema(BaseModel):
     id: int
     user_id: int

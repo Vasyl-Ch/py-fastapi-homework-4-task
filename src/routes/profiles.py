@@ -15,7 +15,6 @@ from security.interfaces import JWTAuthManagerInterface
 from storages import S3StorageInterface
 from config import get_s3_storage_client
 from database.models.accounts import GenderEnum
-from validation import validate_image
 
 router = APIRouter()
 
@@ -39,19 +38,7 @@ async def create_user_profile(
     jwt_manager: JWTAuthManagerInterface = Depends(get_jwt_auth_manager),
     s3_client: S3StorageInterface = Depends(get_s3_storage_client),
     token: str = Depends(get_token),
-) -> ProfileResponseSchema:
-
-    try:
-        profile_data = ProfileCreateSchema(
-            first_name=first_name,
-            last_name=last_name,
-            gender=gender,
-            date_of_birth=date_of_birth,
-            info=info
-        )
-        validate_image(avatar)
-    except ValueError as exc:
-        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc))
+) -> ProfileCreateSchema:
 
     try:
         decoded = jwt_manager.decode_access_token(token)
