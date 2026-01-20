@@ -15,7 +15,7 @@ from security.interfaces import JWTAuthManagerInterface
 from storages import S3StorageInterface
 from config import get_s3_storage_client
 from database.models.accounts import GenderEnum
-from validation import validate_name, validate_gender, validate_birth_date, validate_image
+from validation import validate_image
 
 router = APIRouter()
 

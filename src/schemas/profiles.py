@@ -1,12 +1,11 @@
 from datetime import date
 from typing import Annotated
-from pydantic import BaseModel, HttpUrl, Field, field_validator, BeforeValidator
+from pydantic import BaseModel, HttpUrl, BeforeValidator
 
 from validation import (
     validate_name,
     validate_gender,
     validate_birth_date,
-    validate_image
 )
 
 
